@@ -30,12 +30,12 @@ tests =
             [ test "should not warn about short one-liners" <|
                 \() ->
                     testRule """module A exposing (..)
-            import Foo exposing (bar)"""
+import Foo exposing (bar)"""
                         |> Review.Test.expectNoErrors
             , test "should not warn about short multi-liners" <|
                 \() ->
                     testRule """module A exposing (..)
-            import Test
+import Test
                 exposing
                     ( Test
                     , describe
@@ -45,7 +45,7 @@ tests =
             , test "should not warn about long multi-liners" <|
                 \() ->
                     testRule """module A exposing (..)
-            import Test
+import Test
                 exposing
                     ( Test
                     , describeWhyThisNameIsSoUnreasonablyLongButNeverthelessSomeoneHasProbablyHadToExposeANameAtLeastThisLongOrLongerThan120Chars
