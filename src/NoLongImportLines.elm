@@ -42,10 +42,10 @@ statements, which are prone to merge conflicts.
 rule : Rule
 rule =
     -- Define the rule with the same name as the module it is defined in
-    Rule.newSchema "NoLongImportLines"
+    Rule.newModuleRuleSchema "NoLongImportLines" ()
         -- Make it look at declarations
         |> Rule.withSimpleImportVisitor importVisitor
-        |> Rule.fromSchema
+        |> Rule.fromModuleRuleSchema
 
 
 details =
@@ -59,7 +59,7 @@ details =
     }
 
 
-importVisitor : Node Import -> List Error
+importVisitor : Node Import -> List (Error {})
 importVisitor node =
     let
         range : Range
