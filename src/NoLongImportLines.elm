@@ -38,14 +38,21 @@ import Review.Rule as Rule exposing (Error, Rule, error)
 
 {-| A rule for elm-review that discourages the use of very long `import`
 statements, which are prone to merge conflicts.
+
+    import NoLongImportLines
+    import Review.Rule exposing (Rule)
+
+    config : List Rule
+    config =
+        [ NoLongImportLines.rule
+        ]
+
 -}
 rule : Rule
 rule =
-    -- Define the rule with the same name as the module it is defined in
-    Rule.newSchema "NoLongImportLines"
-        -- Make it look at declarations
+    Rule.newModuleRuleSchema "NoLongImportLines" ()
         |> Rule.withSimpleImportVisitor importVisitor
-        |> Rule.fromSchema
+        |> Rule.fromModuleRuleSchema
 
 
 details =
@@ -59,7 +66,7 @@ details =
     }
 
 
-importVisitor : Node Import -> List Error
+importVisitor : Node Import -> List (Error {})
 importVisitor node =
     let
         range : Range
