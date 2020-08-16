@@ -1,9 +1,9 @@
 {
     "type": "package",
     "name": "r-k-b/no-long-import-lines",
-    "version": "1.0.0",
     "summary": "A rule for elm-review that discourages long one-line Imports.",
     "license": "BSD-3-Clause",
+    "version": "1.0.2",
     "exposed-modules": [
         "NoLongImportLines"
     ],
