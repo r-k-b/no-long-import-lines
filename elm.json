@@ -3,7 +3,7 @@
     "name": "r-k-b/no-long-import-lines",
     "summary": "A rule for elm-review that discourages long one-line Imports.",
     "license": "BSD-3-Clause",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "exposed-modules": [
         "NoLongImportLines"
     ],
