@@ -29,7 +29,8 @@ your `ReviewConfig.elm` file and add it to the config. E.g.:
 import Elm.Syntax.Import exposing (Import)
 import Elm.Syntax.Node as Node exposing (Node)
 import Elm.Syntax.Range exposing (Range)
-import Review.Rule as Rule exposing (Error, Rule, error)
+import Review.Fix exposing (insertAt)
+import Review.Rule as Rule exposing (Error, Rule, errorWithFix)
 
 
 
@@ -82,7 +83,18 @@ importVisitor node =
             range.end.column > 120
     in
     if isSingleLine && exceedsMaxLength then
-        [ node |> Node.range |> error details ]
+        [ errorWithFix details
+            (Node.range node)
+            [ {- elm-review should automatically tidy this up into a multiline
+                 statement using elm-review, right?
+              -}
+              insertAt
+                { row = range.start.row
+                , column = range.end.column - 1
+                }
+                "\n "
+            ]
+        ]
 
     else
         []

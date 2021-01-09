@@ -52,7 +52,7 @@ import Test
                     , test
                     )"""
                         |> Review.Test.expectNoErrors
-            , test "should warn about long one-liners" <|
+            , test "should warn about & fix long one-liners" <|
                 \() ->
                     let
                         longLine =
@@ -62,6 +62,25 @@ import Test
                         |> Review.Test.expectErrors
                             [ Review.Test.error
                                 (standardErrorUnder longLine)
+                                |> Review.Test.whenFixed """module A exposing (..)
+import Html exposing (Attribute, Html, a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul
+ )"""
+                            ]
+            , test "should warn about & fix long one-liners with trailing spaces" <|
+                \() ->
+                    let
+                        longLine =
+                            "import Html exposing (Attribute, Html, a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul)"
+                    in
+                    testRule ("module A exposing (..)\n" ++ longLine ++ " ")
+                        |> Review.Test.expectErrors
+                            [ Review.Test.error
+                                (standardErrorUnder longLine)
+                                |> Review.Test.whenFixed
+                                    ("module A exposing (..)\n"
+                                        ++ "import Html exposing (Attribute, Html, a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul\n"
+                                        ++ " ) "
+                                    )
                             ]
             ]
         ]
