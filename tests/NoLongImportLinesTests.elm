@@ -56,15 +56,39 @@ import Test
                 \() ->
                     let
                         longLine =
-                            "import Html exposing (Attribute, Html, a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul)"
+                            "import Html exposing (Attribute, Html(..), a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul)"
                     in
                     testRule ("module A exposing (..)\n" ++ longLine)
                         |> Review.Test.expectErrors
                             [ Review.Test.error
                                 (standardErrorUnder longLine)
-                                |> Review.Test.whenFixed """module A exposing (..)
-import Html exposing (Attribute, Html, a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul
- )"""
+                                |> Review.Test.whenFixed
+                                    ("module A exposing (..)\n"
+                                        ++ "import Html \n"
+                                        ++ "    exposing\n"
+                                        ++ "        ( Attribute\n"
+                                        ++ "        , Html(..)\n"
+                                        ++ "        , a\n"
+                                        ++ "        , button\n"
+                                        ++ "        , code\n"
+                                        ++ "        , div\n"
+                                        ++ "        , em\n"
+                                        ++ "        , h2\n"
+                                        ++ "        , h3\n"
+                                        ++ "        , h4\n"
+                                        ++ "        , h5\n"
+                                        ++ "        , li\n"
+                                        ++ "        , p\n"
+                                        ++ "        , span\n"
+                                        ++ "        , strong\n"
+                                        ++ "        , table\n"
+                                        ++ "        , td\n"
+                                        ++ "        , text\n"
+                                        ++ "        , th\n"
+                                        ++ "        , tr\n"
+                                        ++ "        , ul\n"
+                                        ++ "        )"
+                                    )
                             ]
             , test "should warn about & fix long one-liners with trailing spaces" <|
                 \() ->
@@ -78,9 +102,36 @@ import Html exposing (Attribute, Html, a, button, code, div, em, h2, h3, h4, h5,
                                 (standardErrorUnder longLine)
                                 |> Review.Test.whenFixed
                                     ("module A exposing (..)\n"
-                                        ++ "import Html exposing (Attribute, Html, a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul\n"
-                                        ++ " ) "
+                                        ++ "import Html \n"
+                                        ++ "    exposing\n"
+                                        ++ "        ( Attribute\n"
+                                        ++ "        , Html\n"
+                                        ++ "        , a\n"
+                                        ++ "        , button\n"
+                                        ++ "        , code\n"
+                                        ++ "        , div\n"
+                                        ++ "        , em\n"
+                                        ++ "        , h2\n"
+                                        ++ "        , h3\n"
+                                        ++ "        , h4\n"
+                                        ++ "        , h5\n"
+                                        ++ "        , li\n"
+                                        ++ "        , p\n"
+                                        ++ "        , span\n"
+                                        ++ "        , strong\n"
+                                        ++ "        , table\n"
+                                        ++ "        , td\n"
+                                        ++ "        , text\n"
+                                        ++ "        , th\n"
+                                        ++ "        , tr\n"
+                                        ++ "        , ul\n"
+                                        ++ "        ) "
                                     )
                             ]
+            , test "should not warn about unfixable lines" <|
+                \() ->
+                    testRule """module A exposing (..)
+import Why.Is.ThisModuleNameIsSoUnreasonablyLongButNeverthelessSomeoneHasProbablyHadToImportANameAtLeastThisLongOrLongerThan120Chars exposing (..)"""
+                        |> Review.Test.expectNoErrors
             ]
         ]
