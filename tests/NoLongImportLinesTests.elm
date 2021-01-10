@@ -56,7 +56,7 @@ import Test
                 \() ->
                     let
                         longLine =
-                            "import Html exposing (Attribute, Html, a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul)"
+                            "import Html exposing (Attribute, Html(..), a, button, code, div, em, h2, h3, h4, h5, li, p, span, strong, table, td, text, th, tr, ul)"
                     in
                     testRule ("module A exposing (..)\n" ++ longLine)
                         |> Review.Test.expectErrors
@@ -67,7 +67,7 @@ import Test
                                         ++ "import Html \n"
                                         ++ "    exposing\n"
                                         ++ "        ( Attribute\n"
-                                        ++ "        , Html\n"
+                                        ++ "        , Html(..)\n"
                                         ++ "        , a\n"
                                         ++ "        , button\n"
                                         ++ "        , code\n"
