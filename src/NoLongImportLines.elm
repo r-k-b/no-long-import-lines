@@ -84,12 +84,25 @@ importVisitor node =
         exceedsMaxLength =
             range.end.column > 120
     in
-    if isSingleLine && exceedsMaxLength then
+    if isSingleLine && exceedsMaxLength && canBeChopped node then
         [ errorWithFix details (Node.range node) (chopDownLine node)
         ]
 
     else
         []
+
+
+canBeChopped : Node Import -> Bool
+canBeChopped node =
+    case node |> Node.value |> .exposingList |> Maybe.map Node.value of
+        Just (Exposing.All _) ->
+            False
+
+        Just (Exposing.Explicit _) ->
+            True
+
+        Nothing ->
+            False
 
 
 chopDownLine : Node Import -> List Fix
@@ -104,7 +117,8 @@ chopDownLine node =
             importNode.exposingList
     in
     case exposingNode of
-        Just (Node.Node range (Exposing.All allRange)) ->
+        Just (Node.Node _ (Exposing.All _)) ->
+            -- elm-format doesn't permit multiline `import _ exposing (..)`
             []
 
         Just (Node.Node exposingRange (Exposing.Explicit nodes)) ->

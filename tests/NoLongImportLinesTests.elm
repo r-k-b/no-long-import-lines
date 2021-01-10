@@ -128,5 +128,10 @@ import Test
                                         ++ "        ) "
                                     )
                             ]
+            , test "should not warn about unfixable lines" <|
+                \() ->
+                    testRule """module A exposing (..)
+import Why.Is.ThisModuleNameIsSoUnreasonablyLongButNeverthelessSomeoneHasProbablyHadToImportANameAtLeastThisLongOrLongerThan120Chars exposing (..)"""
+                        |> Review.Test.expectNoErrors
             ]
         ]
