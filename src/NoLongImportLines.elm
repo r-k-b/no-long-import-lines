@@ -107,16 +107,7 @@ canBeChopped node =
 
 chopDownLine : Node Import -> List Fix
 chopDownLine node =
-    let
-        importNode : Import
-        importNode =
-            Node.value node
-
-        exposingNode : Maybe (Node Exposing)
-        exposingNode =
-            importNode.exposingList
-    in
-    case exposingNode of
+    case node |> Node.value |> .exposingList of
         Just (Node.Node _ (Exposing.All _)) ->
             -- elm-format doesn't permit multiline `import _ exposing (..)`
             []
