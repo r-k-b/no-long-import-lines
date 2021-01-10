@@ -26,10 +26,12 @@ your `ReviewConfig.elm` file and add it to the config. E.g.:
 
 -}
 
+import Elm.Syntax.Exposing as Exposing exposing (Exposing)
 import Elm.Syntax.Import exposing (Import)
 import Elm.Syntax.Node as Node exposing (Node)
 import Elm.Syntax.Range exposing (Range)
-import Review.Fix exposing (insertAt)
+import Maybe.Extra as ME
+import Review.Fix exposing (Fix, replaceRangeBy)
 import Review.Rule as Rule exposing (Error, Rule, errorWithFix)
 
 
@@ -83,18 +85,53 @@ importVisitor node =
             range.end.column > 120
     in
     if isSingleLine && exceedsMaxLength then
-        [ errorWithFix details
-            (Node.range node)
-            [ {- elm-review should automatically tidy this up into a multiline
-                 statement using elm-review, right?
-              -}
-              insertAt
-                { row = range.start.row
-                , column = range.end.column - 1
-                }
-                "\n "
-            ]
+        [ errorWithFix details (Node.range node) (chopDownLine node)
         ]
 
     else
         []
+
+
+chopDownLine : Node Import -> List Fix
+chopDownLine node =
+    let
+        importNode : Import
+        importNode =
+            Node.value node
+
+        exposingNode : Maybe (Node Exposing)
+        exposingNode =
+            importNode.exposingList
+    in
+    case exposingNode of
+        Just (Node.Node range (Exposing.All allRange)) ->
+            []
+
+        Just (Node.Node exposingRange (Exposing.Explicit nodes)) ->
+            let
+                nodeTexts : List String
+                nodeTexts =
+                    nodes |> List.map (Node.value >> topLevelExposeToLiteral)
+            in
+            [ replaceRangeBy exposingRange ("""
+    exposing
+        ( """ ++ (nodeTexts |> String.join "\n        , ") ++ "\n        )") ]
+
+        Nothing ->
+            []
+
+
+topLevelExposeToLiteral : Exposing.TopLevelExpose -> String
+topLevelExposeToLiteral topLevelExpose =
+    case topLevelExpose of
+        Exposing.InfixExpose string ->
+            string
+
+        Exposing.FunctionExpose string ->
+            string
+
+        Exposing.TypeOrAliasExpose string ->
+            string
+
+        Exposing.TypeExpose exposedType ->
+            exposedType.name ++ (exposedType.open |> ME.unwrap "" (always "(..)"))
