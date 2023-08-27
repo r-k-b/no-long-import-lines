@@ -55,6 +55,7 @@ rule : Rule
 rule =
     Rule.newModuleRuleSchema "NoLongImportLines" ()
         |> Rule.withSimpleImportVisitor importVisitor
+        |> Rule.providesFixesForModuleRule
         |> Rule.fromModuleRuleSchema
 
 
